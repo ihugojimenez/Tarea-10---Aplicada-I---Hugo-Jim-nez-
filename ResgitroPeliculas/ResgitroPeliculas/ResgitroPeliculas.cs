@@ -20,16 +20,19 @@ namespace ResgitroPeliculas
 
         private void button1_Click(object sender, EventArgs e)
         {
+            int aux = Convert.ToInt32(IdTextBox.Text);
             SqlConnection con = new SqlConnection(@"Data source = .\Sqlexpress;Initial catalog=Peliculas; Integrated Security=True");
-            SqlCommand comando = new SqlCommand("select * from Movies Where CategoriaId = IdTextBox.Text", con);
+            SqlCommand comando = new SqlCommand("select * from Movies Where categoriaId = " + Convert.ToString(aux), con);
             SqlDataAdapter adapter = new SqlDataAdapter(comando);
             DataTable table = new DataTable();
+            TextBox tb = new TextBox();
            
             try
             {
                 con.Open();
+               //adapter.Fill(tb);
                 adapter.Fill(table);
-                IdTextBox.Text = table.ToString();
+                dataGridView1.DataSource = table;
             }
 
             catch(Exception ex)

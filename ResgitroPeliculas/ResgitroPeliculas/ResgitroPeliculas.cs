@@ -13,6 +13,33 @@ namespace ResgitroPeliculas
 {
     public partial class ResgitroPeliculas : Form
     {
+        void EjecutarComando(string cmd)
+        {
+            SqlConnection con = new SqlConnection(@"Data source = .\Sqlexpress;Initial catalog=Peliculas; Integrated Security=True");
+            SqlCommand comando = new SqlCommand(cmd, con);
+
+            try
+            {
+                con.Open();
+                comando.ExecuteNonQuery();
+                IdTextBox.Text = "";
+                DescTextBox.Text = "";
+
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al conectar" + ex.Message);
+            }
+
+            finally
+            {
+                con.Close();
+                comando.Dispose();
+            }
+        }
+
+
         public ResgitroPeliculas()
         {
             InitializeComponent();
@@ -54,32 +81,62 @@ namespace ResgitroPeliculas
 
         private void button2_Click(object sender, EventArgs e)
         {
-
+            
             string ElComando = "";
             ElComando = string.Format("Insert into Movies(Descripcion) values('{0}')", DescTextBox.Text);
-            SqlConnection con = new SqlConnection(@"Data source = .\Sqlexpress;Initial catalog=Peliculas; Integrated Security=True");
-            SqlCommand comando = new SqlCommand(ElComando, con);
-
-            try
+            if(IdTextBox.Text != "")
             {
-                con.Open();
-                comando.ExecuteNonQuery();
-                IdTextBox.Text = "";
-                DescTextBox.Text = "";
+                MessageBox.Show("Favor solo rellenar la descripcion de la pelicula. Al guardar nuevas peliculas, el campo ID se rellana automaticamente.");
+            }
+            else
+            {
+                if (DescTextBox.Text == "")
+                {
+                    MessageBox.Show("Por favor llenar el campo descripcion");
+                }
+                else
+                {
+                    EjecutarComando(ElComando);
+                }
+
 
             }
 
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al conectar" + ex.Message);
-            }
 
-            finally
-            {
-                con.Close();
-                comando.Dispose();
-            }
-            
         }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            string ElComando = "";
+            int aux = Convert.ToInt32(IdTextBox.Text);
+            ElComando = string.Format("Delete from Movies Where CategoriaId = {0}", aux);
+            if (IdTextBox.Text == "")
+            {
+                MessageBox.Show("Para eliminar se necesita el ID de la categoria. Favor ingresar el Id de la categoria que desea eliminar");
+            }
+            else
+            {
+                EjecutarComando(ElComando);
+            }
+
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            string ElComando = "";
+            int aux = Convert.ToInt32(IdTextBox.Text);
+            ElComando = string.Format("update Movies set Descripcion = '{0}' where CategoriaId = {1}", DescTextBox.Text, aux);
+            if (IdTextBox.Text == " " && DescTextBox.Text == "")
+            {
+                MessageBox.Show("Para modificar favor ingresar el id de la categoria y la nueva descripcion");
+            }
+            else
+            {
+                EjecutarComando(ElComando);
+            }
+
+        
+
+    }
     }
 }
